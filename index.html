@@ -43,17 +43,6 @@
   --glow-mid: rgba(var(--teal),.06);
   --glow-strong: rgba(var(--lime),.8);
   --glow-strong-teal: rgba(var(--teal),.8);
-  --mini-count: 10;
-  --mini-dur: 1s;
-  --mini-size-min: 4px;
-  --mini-size-max: 24px;
-  --mini-horizontal-spread-mult: 0.5;
-  --mini-vertical-spread-mult: 0.5;
-  --mini-jitter-x: 30px;
-  --mini-jitter-y: 24px;
-  --mini-spawn-down-ratio: 0.06;
-  --mini-spawn-nudge-ratio: 0.06;
-  --mini-blur: 3px;
   --particles-count: 12;
   --particles-dur-min: 6s;
   --particles-dur-max: 14s;
@@ -245,9 +234,9 @@ body::after{
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background: radial-gradient(circle var(--glow-size, 420px) at var(--glow-x, 50%) var(--glow-y, 30%), var(--color-teal-primary) 0%, var(--color-teal-primary) 10%, var(--lime-16) 20%, transparent 35%);
-  filter: blur(14px);
-  opacity: 0.95;
+  background: radial-gradient(circle var(--glow-size, 420px) at var(--glow-x, 50%) var(--glow-y, 30%), var(--color-teal-primary) 0%, var(--color-teal-primary) 25%, var(--lime-40) 50%, transparent 100%);
+  filter: blur(8px);
+  opacity: 1.0;
 }
 
 body > *{position:relative;z-index:1}
@@ -684,34 +673,6 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   animation: particle-up var(--dur, 6s) linear infinite;
 }
 
-/* Mini particle system inside the header container (always on top) */
-.mini-particles{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:10004; /* above crown (10001) */
-  /* keep overflow visible so particles can escape upward beyond container */
-  overflow:visible;
-  /* ensure the container itself doesn't contribute to layout overflow */
-  contain: layout;
-}
-.mini-particles .particle-mini{
-  position:absolute;
-  /* use a solid, fully-opaque color for high visibility during testing */
-  background: var(--lime-100);
-  border-radius:50%;
-  filter: blur(var(--mini-blur, 0.1px));
-  opacity:0; /* start invisible; animation will fade them in */
-  transform: translateY(0) translateX(0) scale(1);
-  will-change: transform, opacity, filter;
-  mix-blend-mode: screen;
-  transition: opacity 120ms linear;
-  animation: mini-particle-up var(--dur, 1s) linear infinite;
-  animation-fill-mode: both;
-}
-
 /* Click / touch pulse animation (spawn at pointer position) */
 :root{
   --click-pulse-color: rgba(255,237,78,0.9);
@@ -765,15 +726,6 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   0%{ opacity: 0; transform: translate3d(var(--start-x, 0px), var(--start-y, 0px), 0) scale(0.2); }
   15%{ opacity: 0.5; transform: translate3d(var(--start-x, 0px), var(--start-y, 0px), 0) scale(2); }
   100%{ opacity: 1; transform: translate3d(var(--start-x, 0px), var(--end-y, 0px), 0) scale(0); }
-}
-
-@keyframes mini-particle-up{
-  0%{ opacity: 0; transform: translateY(0px) translateX(0px) scale(0); }
-  5%{ opacity: 0.1; transform: translateY(0px) translateX(0px) scale(20); }
-  50%{ opacity: 0.5; transform: translateY(-2750%) translateX(0px) scale(2); }
-  /* remain fully opaque for the majority of the animation for testing visibility */
-  /*95%{ opacity: 1; transform: translateY(-2500%) translateX(0px) scale(0.35); }*/
-  100%{ opacity: 0; transform: translateY(-3000%) translateX(0px) scale(0.3); }
 }
 
 @keyframes particle-up{
@@ -842,7 +794,6 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   <div class="header-svg-container">
     <img src="./mighty_crown_go.svg" alt="Pokémark" class="header-crown" />
     <div class="energy-particles" aria-hidden="true"></div>
-    <div class="mini-particles" aria-hidden="true"></div>
   </div>
   <!--<h1>MÄCHTIGE POKÉMON</h1>-->
   <div class="header-actions">
@@ -1159,110 +1110,6 @@ class ClickEffects {
   }
 }
 
-// Mini particle system used for header bursts (positioned relative to header)
-class MiniParticles extends ParticleSystem {
-  constructor(){
-    // Use the existing HTML container `.mini-particles` and CSS class `.particle-mini`
-    super('.mini-particles', '--mini-particle', 'particle-mini', {
-      count: 20,
-      dur: 0.3,
-      'size-min': 6,
-      'size-max': 0,
-      'horizontal-spread-mult': 0.25,
-      'vertical-spread-mult': 0.25,
-      'jitter-x': 30,
-      'jitter-y': 24,
-      'spawn-down-ratio': 0.06,
-      'spawn-nudge-ratio': 0.06
-    });
-  }
-
-  spawnParticle(cfg) {
-    const p = document.createElement('div');
-    p.className = this.className;
-    p.style.setProperty('--dur', cfg.dur + 's');
-    p.style.setProperty('--drift', '0px');
-
-    // Attempt to measure the container and position the particle before appending.
-    // If the container isn't ready (width === 0) we retry a few times to avoid
-    // appending a particle with no position which can cause it to appear briefly
-    // at an unexpected location and vanish.
-    let attempts = 0;
-    const maxAttempts = 6;
-
-    const tryPlace = () => {
-      attempts++;
-      try {
-        const r = this.container.getBoundingClientRect();
-        if(!r || r.width <= 0) throw new Error('no-size');
-
-        const crownEl = document.querySelector('.header-crown');
-        const energyEl = document.querySelector('.header-energy');
-        const spawnDownRatio = cfg['spawn-down-ratio'];
-        const spawnNudgePx = r.height * cfg['spawn-nudge-ratio'];
-
-        let baseX = r.width * 0.5;
-        let baseY = r.height * 0.45 + r.height * spawnDownRatio + spawnNudgePx;
-
-        if(crownEl) {
-          const cRect = crownEl.getBoundingClientRect();
-          baseX = (cRect.left + cRect.width * 0.5) - r.left;
-          baseY = (cRect.top + cRect.height - r.top) + r.height * (spawnDownRatio * 0.5) + (r.height * 0.06);
-        } else if(energyEl) {
-          const eRect = energyEl.getBoundingClientRect();
-          baseX = (eRect.left + eRect.width * 0.5) - r.left;
-          baseY = (eRect.top + eRect.height - r.top) + r.height * (spawnDownRatio * 0.5) + (r.height * 0.06);
-        }
-
-        const hSpread = Math.max(20, r.width * cfg['horizontal-spread-mult']);
-        const vSpread = Math.max(16, r.height * cfg['vertical-spread-mult']);
-        const jitterX = (Math.random() * (cfg['jitter-x'] * 2)) - cfg['jitter-x'];
-        const jitterY = (Math.random() * (cfg['jitter-y'] * 2)) - cfg['jitter-y'];
-        const xPx = baseX + (Math.random() - 0.5) * hSpread + jitterX;
-        const yPx = baseY + (Math.random() - 0.5) * vSpread + jitterY;
-        const xPct = r.width > 0 ? (xPx / r.width) * 100 : 50;
-        const yPct = r.height > 0 ? (yPx / r.height) * 100 : 30;
-        const natural = Math.round(r.width * 0.02);
-        const size = Math.max(cfg['size-min'], Math.min(cfg['size-max'], natural));
-
-        p.style.left = Math.min(100, Math.max(0, xPct)).toFixed(4) + '%';
-        p.style.top = Math.min(100, Math.max(0, yPct)).toFixed(4) + '%';
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        // Use a non-negative delay so particles never start mid-cycle
-        // which avoids visual snapping when appended.
-        p.style.setProperty('animation-delay', (Math.random() * 0.6) + 's');
-
-        // Now the particle has valid placement; append and wire the iteration handler.
-        p.addEventListener('animationiteration', tryPlace);
-        this.container.appendChild(p);
-      } catch(e) {
-        if(attempts < maxAttempts){
-          // Try again shortly; using requestAnimationFrame keeps retries aligned
-          // with layout without blocking.
-          requestAnimationFrame(tryPlace);
-        } else {
-          // Fallback: place particle centered in container so it doesn't pop in
-          try{
-            const fallbackX = 50;
-            const fallbackY = 50;
-            p.style.left = fallbackX + '%';
-            p.style.top = fallbackY + '%';
-            p.style.width = Math.max(4, cfg['size-min']) + 'px';
-            p.style.height = Math.max(4, cfg['size-min']) + 'px';
-            // Fallback uses a small non-negative random delay as well.
-            p.style.setProperty('animation-delay', (Math.random() * 0.6) + 's');
-            p.addEventListener('animationiteration', tryPlace);
-            this.container.appendChild(p);
-          }catch(_){}
-        }
-      }
-    };
-
-    tryPlace();
-  }
-}
-
 // Global floating particles
 class GlobalParticles extends ParticleSystem {
   constructor() {
@@ -1328,19 +1175,12 @@ const energyParticles = new EnergyParticles();
 
 // Singleton instances
 const globalParticles = new GlobalParticles();
-const miniParticles = new MiniParticles();
 
-// Legacy function wrappers for backward compatibility
+// Legacy function wrapper for backward compatibility
 function initParticles(count){
   // If `count` is undefined, `ParticleSystem.init` will fall back to the
   // class-configured `count` (set in each subclass constructor).
   globalParticles.init(count);
-}
-
-function initMiniParticles(count){
-  // If `count` is undefined, `ParticleSystem.init` will fall back to the
-  // class-configured `count` (set in each subclass constructor).
-  miniParticles.init(count);
 }
 
 // NOTE: no global busy flag — button animations are reset on each click so
@@ -1503,7 +1343,6 @@ const ResizeManager = {
   
   updateParticlesAndGlow() {
     initParticles();
-    initMiniParticles();
   }
 };
 
@@ -1640,8 +1479,6 @@ scheduleMidnightUpdate();
 energyParticles.init();
 // initialize particles after rendering so header sizes are known
 initParticles();
-// initialize mini particles (inside header) after main particles
-initMiniParticles()
 // Phase 8: Debounced resize handlers using ResizeManager
 let _resizeTimer;
 const debounceResize = (fn, delay) => () => {
@@ -1768,19 +1605,21 @@ document.addEventListener('touchmove', function(e) {
       const y = ((r.top + r.height * 0.5) / Math.max(window.innerHeight, 1)) * 100;
 
       // choose a pixel-based size that scales with header but stays reasonable
-      // Use header width as the base so the glow remains proportionate to the SVG
-      const baseSize = Math.max(Math.round(r.width * 2.4), 420);
+      // Use crown width as the base so the glow remains proportionate to the SVG
+      const crownEl = document.querySelector('.header-crown');
+      const crownRect = crownEl ? crownEl.getBoundingClientRect() : r;
+      const baseSize = Math.round(crownRect.width * 1);
 
       root.style.setProperty('--glow-size', baseSize + 'px');
       root.style.setProperty('--glow-x', x + '%');
       root.style.setProperty('--glow-y', y + '%');
     }
 
-    // debounce helper
-    let resizeTimer = null;
+    // Update glow smoothly during resize using requestAnimationFrame
+    let resizeFrame = null;
     function scheduleUpdate(){
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(updateHeaderGlow, 120);
+      if(resizeFrame) cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(updateHeaderGlow);
     }
 
     window.addEventListener('resize', scheduleUpdate, {passive:true});
