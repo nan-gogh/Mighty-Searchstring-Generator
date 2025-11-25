@@ -556,13 +556,13 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   padding:clamp(12px, 3vw, 16px) clamp(20px, 4vw, 28px);
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: min(clamp(12px, calc(var(--header-control-effective) * 0.07), 40px), 8.5vw);
   letter-spacing: 0.1em;
   -webkit-text-stroke: min(0.25px, 0.03em) var(--color-lime-bright);
   text-shadow: 0 0 min(8px, 0.8em) var(--color-lime-bright), 0 0 min(12px, 1.2em) var(--color-lime-bright);
   cursor: pointer;
   /* sizing matches `.header-actions .btn` so it adapts the same on narrow screens */
   width: var(--header-control-effective);
+  height: 60px; /* Fixed height for consistency across languages */
   max-width: 100%;
   box-sizing: border-box;
   display: inline-flex;
@@ -867,7 +867,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 
 <header>
   <div class="header-svg-container">
-    <img src="./mighty_crown_go.svg" alt="Pokémark" class="header-crown" />
+    <img src="./mighty_crown_go.svg" alt="Mighty Mark Go" class="header-crown" />
     <div class="energy-particles" aria-hidden="true"></div>
     <div class="crown-particles" aria-hidden="true"></div>
     <div class="crown-particles-small" aria-hidden="true"></div>
@@ -886,7 +886,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 // ===== LANGUAGE SYSTEM =====
 const TRANSLATIONS = {
   de: {
-    title: 'MÄCHTIGE POKÉMON',
+    title: 'MÄCHTIG',
     pageTitle: 'Mächtiger Suchstring Generator',
     infoBtn: 'INFO',
     backBtn: 'ZURÜCK',
@@ -951,7 +951,7 @@ const TRANSLATIONS = {
     }
   },
   en: {
-    title: 'MIGHTY POKÉMON',
+    title: 'MIGHTY',
     pageTitle: 'Mighty Searchstring Generator',
     infoBtn: 'INFO',
     backBtn: 'BACK',
@@ -1054,6 +1054,34 @@ function setLanguage(lang) {
   }
 }
 
+// Function to measure text width
+function getTextWidth(text, font) {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  context.font = font;
+  return context.measureText(text).width;
+}
+
+// Function to fit text to button width
+function fitTextToButton(button) {
+  const text = button.innerText;
+  const margin = button.clientWidth * 0.03; // Margin based on button width: smaller for narrower buttons (high zoom/narrow screens)
+  let low = 1;
+  let high = 200;
+  let best = 1;
+  while (low <= high) {
+    const mid = Math.floor((low + high) / 2);
+    button.style.fontSize = mid + 'px';
+    if (button.scrollWidth <= button.clientWidth && button.scrollHeight <= button.clientHeight) {
+      best = mid;
+      low = mid + 1;
+    } else {
+      high = mid - 1;
+    }
+  }
+  button.style.fontSize = best - margin + 'px';
+}
+
 function updateUILanguage() {
   const t = TRANSLATIONS[currentLang];
   
@@ -1062,6 +1090,7 @@ function updateUILanguage() {
   if (clipboardBtn && clipboardBtn._origText !== '✓') {
     clipboardBtn.innerText = t.title;
     clipboardBtn._origText = t.title;
+    fitTextToButton(clipboardBtn);
   }
   
   // Update info button if not showing back
@@ -1090,6 +1119,7 @@ function updateUILanguage() {
     infoBtn.innerText = t.backBtn;
   }
 }
+
 
 // Initialize language on load
 currentLang = detectLanguage();
@@ -1144,6 +1174,13 @@ const CSS = {
     return config;
   }
 };
+
+// ResizeObserver for dynamic font scaling
+const resizeObserver = new ResizeObserver(entries => {
+  for (let entry of entries) {
+    fitTextToButton(entry.target);
+  }
+});
 
 // Base particle system with shared init/spawn logic
 class ParticleSystem {
@@ -1599,6 +1636,7 @@ function _setButtonState(btn, text, state){
 
   // Update label and restart the visual animation for the requested state.
   btn.innerText = text;
+  fitTextToButton(btn);
   // remove any previous state classes first
   btn.classList.remove('success','error');
   if(state){
@@ -1615,6 +1653,7 @@ function _setButtonState(btn, text, state){
   btn._timeout = setTimeout(()=>{
     // restore original text and any preserved minHeight
     btn.innerText = btn._origText;
+    fitTextToButton(btn);
     btn.classList.remove('success','error');
     try{
       if(btn._savedMinHeight !== undefined){
@@ -1643,6 +1682,8 @@ const _attachUIListeners = ()=>{
   const clipboardEl = document.querySelector('.btn-clipboard');
   if(clipboardEl){
     clipboardEl._origText = clipboardEl.innerText;
+    resizeObserver.observe(clipboardEl);
+    setTimeout(() => fitTextToButton(clipboardEl), 100);
     clipboardEl.addEventListener('click', (e)=>{
       copyAndNotify(clipboardEl);
     });
