@@ -904,7 +904,7 @@ const TRANSLATIONS = {
       autoAgeContent: 'Die Zeiträume werden dynamisch berechnet.',
       remarks: 'ANMERKUNGEN',
       precision: 'Genauigkeit',
-      precisionContent: 'Die Suchergebnisse sollten immer überprüft werden, da einige wenige Sonderfälle nicht ausgeschlossen werden können.',
+      precisionContent: 'Die Suchergebnisse sollten immer überprüft werden, da einige wenige Falsch-Positive nicht ausgeschlossen werden können.',
       excluded: 'Ausschluss',
       excludedContent: 'Getauschte Pokémon sind vom Suchstring ausgeschlossen.',
       eventIntel: 'EVENT INTEL',
@@ -969,7 +969,7 @@ const TRANSLATIONS = {
       autoAgeContent: 'Time periods are calculated dynamically.',
       remarks: 'REMARKS',
       precision: 'Precision',
-      precisionContent: 'Search results should always be verified, as some rare edge cases cannot be excluded.',
+      precisionContent: 'Search results should always be verified, as some rare false positives cannot be excluded.',
       excluded: 'Exclusion',
       excludedContent: 'Traded Pokémon are excluded from the searchstring.',
       eventIntel: 'EVENT INTEL',
@@ -1019,7 +1019,6 @@ const TRANSLATIONS = {
 
 // Language management
 let currentLang = 'de';
-let languageChangeTimeout = null;
 
 function detectLanguage() {
   const stored = localStorage.getItem('pokemon-lang');
@@ -1030,8 +1029,6 @@ function detectLanguage() {
 }
 
 function setLanguage(lang) {
-  if (languageChangeTimeout) return; // Prevent rapid successive calls
-  
   currentLang = lang;
   localStorage.setItem('pokemon-lang', lang);
   
@@ -1066,19 +1063,12 @@ function setLanguage(lang) {
         langToggle.style.pointerEvents = '';
         langToggle.style.cursor = '';
       }
-      languageChangeTimeout = null; // Reset debounce
     }, 600);
   } else {
     // Fallback if element not found
     updateUILanguage();
     renderPreview();
-    languageChangeTimeout = null; // Reset debounce
   }
-  
-  // Set debounce timeout
-  languageChangeTimeout = setTimeout(() => {
-    languageChangeTimeout = null;
-  }, 600);
 }
 
 // Function to measure text width
