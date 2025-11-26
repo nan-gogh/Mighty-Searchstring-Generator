@@ -1019,6 +1019,7 @@ const TRANSLATIONS = {
 
 // Language management
 let currentLang = 'de';
+let languageChangeTimeout = null;
 
 function detectLanguage() {
   const stored = localStorage.getItem('pokemon-lang');
@@ -1029,6 +1030,8 @@ function detectLanguage() {
 }
 
 function setLanguage(lang) {
+  if (languageChangeTimeout) return; // Prevent rapid successive calls
+  
   currentLang = lang;
   localStorage.setItem('pokemon-lang', lang);
   
@@ -1063,12 +1066,19 @@ function setLanguage(lang) {
         langToggle.style.pointerEvents = '';
         langToggle.style.cursor = '';
       }
+      languageChangeTimeout = null; // Reset debounce
     }, 600);
   } else {
     // Fallback if element not found
     updateUILanguage();
     renderPreview();
+    languageChangeTimeout = null; // Reset debounce
   }
+  
+  // Set debounce timeout
+  languageChangeTimeout = setTimeout(() => {
+    languageChangeTimeout = null;
+  }, 600);
 }
 
 // Function to measure text width
