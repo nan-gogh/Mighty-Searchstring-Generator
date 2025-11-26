@@ -584,15 +584,20 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   outline: none;
 }
 
-@media (hover: hover) {
-  .btn-clipboard:hover{
-    /*box-shadow: 0 18px 50px var(--lime-16), 0 6px 18px var(--lime-08);*/
-    transform: var(--anchor) scale(1.02);
-  }
-  .btn:hover{
-    transform: var(--anchor) scale(1.02);
-    /*box-shadow: 0 10px 28px var(--glow-subtle), 0 0 20px var(--glow-mid);*/
-  }
+.btn:hover{
+  filter: brightness(1.1);
+}
+
+.btn-clipboard:hover{
+  filter: brightness(1.1);
+}
+
+#mode-info-btn:hover{
+  filter: brightness(1.1);
+}
+
+#lang-toggle:hover{
+  filter: brightness(1.1);
 }
 
 @keyframes btn-pulse{
@@ -616,6 +621,11 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 @keyframes btn-press{
   0%,100%{transform:var(--anchor) scale(1)}
   50%{transform:var(--anchor) scale(1.02)}
+}
+
+@keyframes btn-press-lang{
+  0%,100%{transform:var(--anchor) scale(1)}
+  50%{transform:var(--anchor) scale(1.1)}
 }
 
 @keyframes img-bob{
@@ -813,15 +823,9 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 }
 /* small-screen media queries removed — layout relies on clamp() and tokens */
 /* Ensure anchored buttons keep their centering translate while hovered/active */
-@media (hover: hover) {
-  #mode-info-btn:hover, .btn-clipboard:hover{
-    transform: var(--anchor) scale(1.02);
-    /*box-shadow: 0 10px 28px var(--glow-subtle), 0 0 20px var(--glow-mid);*/
-  }
-}
 
 /* Use shared press animation which respects the --anchor variable */
-#mode-info-btn:active, .btn-clipboard:active{
+#mode-info-btn:active/*,.btn-clipboard:active*/{
   animation: btn-press 220ms ease-out;
 }
 
@@ -847,16 +851,10 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-@media (hover: hover) {
-  #lang-toggle:hover{
-    transform: var(--anchor) scale(1.1);
-    /*box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 0 12px var(--glow-mid);*/
-  }
+#lang-toggle:active{
+  animation: btn-press-lang 220ms ease-out;
 }
 
-#lang-toggle:active{
-  animation: btn-press 220ms ease-out;
-}
 </style>
 </head>
 <body class="opening">
@@ -873,10 +871,9 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
     <div class="crown-particles" aria-hidden="true"></div>
     <div class="crown-particles-small" aria-hidden="true"></div>
   </div>
-  <!--<h1>MÄCHTIGE POKÉMON</h1>-->
   <div class="header-actions">
     <div class="card">
-        <button class="btn-clipboard">MIGHTY POKÉMON</button>
+        <button class="btn-clipboard">MIGHTY</button>
       <textarea id="output" readonly></textarea>
       <button id="mode-info-btn" class="btn">INFO</button>
     </div>
@@ -1033,10 +1030,23 @@ function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem('pokemon-lang', lang);
   
+  // Update language toggle button immediately for instant feedback
+  const langToggle = document.getElementById('lang-toggle');
+  if (langToggle) {
+    langToggle.innerText = lang === 'de' ? 'EN' : 'DE';
+    langToggle.setAttribute('aria-label', lang === 'de' ? 'Switch to English' : 'Zu Deutsch wechseln');
+  }
+  
   // Trigger language change animation
   const headerActions = document.querySelector('.header-actions');
   if (headerActions) {
     headerActions.classList.add('language-flip');
+    
+    // Disable lang toggle during animation
+    if (langToggle) {
+      langToggle.style.pointerEvents = 'none';
+      langToggle.style.cursor = 'default';
+    }
     
     // Update language at the exact middle of the animation (when rotated 90deg and invisible)
     setTimeout(() => {
@@ -1044,9 +1054,13 @@ function setLanguage(lang) {
       renderPreview();
     }, 300); // Exactly half of the 600ms animation duration
     
-    // Remove the animation class after it completes
+    // Remove the animation class and re-enable button after it completes
     setTimeout(() => {
       headerActions.classList.remove('language-flip');
+      if (langToggle) {
+        langToggle.style.pointerEvents = '';
+        langToggle.style.cursor = '';
+      }
     }, 600);
   } else {
     // Fallback if element not found
