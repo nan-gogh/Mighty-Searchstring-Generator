@@ -613,7 +613,6 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 }
 
 .touch-device .btn:active {
-  filter: brightness(1.1);
   animation: btn-press 220ms ease-out;
 }
 
@@ -621,6 +620,11 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 .btn:active {
   filter: brightness(1.1);
   animation: btn-press 220ms ease-out;
+}
+
+/* Reliable touch brightness feedback */
+.pressed {
+  filter: brightness(1.2) !important;
 }
 
 @keyframes btn-pulse{
@@ -850,7 +854,6 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 /* Use shared press animation which respects the --anchor variable */
 #mode-info-btn:active/*,.btn-clipboard:active*/{
   animation: btn-press 220ms ease-out;
-  filter: brightness(1.1);
 }
 
 /* Language toggle button */
@@ -878,7 +881,6 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 
 #lang-toggle:active{
   animation: btn-press-lang 220ms ease-out;
-  filter: brightness(1.1);
 }
 
 </style>
@@ -914,6 +916,18 @@ if (('ontouchstart' in window || navigator.maxTouchPoints > 0) &&
      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone|WPDesktop|Silk|CriOS|FxiOS|Mobile|Tablet|Kindle|BB10|PlayBook/i.test(navigator.userAgent))) {
   document.body.classList.add('touch-device');
 }
+
+// Add reliable touch feedback for brightness
+document.addEventListener('touchstart', (e) => {
+  const target = e.target.closest('.btn, .btn-clipboard, #mode-info-btn, #lang-toggle');
+  if (target) {
+    target.classList.add('pressed');
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  document.querySelectorAll('.pressed').forEach(el => el.classList.remove('pressed'));
+}, { passive: true });
 
 // ===== LANGUAGE SYSTEM =====
 const TRANSLATIONS = {
