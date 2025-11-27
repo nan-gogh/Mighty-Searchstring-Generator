@@ -613,13 +613,15 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 }
 
 .touch-device .btn:active {
-  filter: brightness(1.3);
+  background: var(--color-lime-bright);
+  color: var(--color-teal-primary);
   animation: btn-press 220ms ease-out;
 }
 
 /* Touch feedback for mobile devices */
 .btn:active {
-  filter: brightness(1.3);
+  background: var(--color-lime-bright);
+  color: var(--color-teal-primary);
   animation: btn-press 220ms ease-out;
 }
 
@@ -849,8 +851,9 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 
 /* Use shared press animation which respects the --anchor variable */
 #mode-info-btn:active/*,.btn-clipboard:active*/{
+  background: var(--color-lime-bright);
+  color: var(--color-teal-primary);
   animation: btn-press 220ms ease-out;
-  filter: brightness(1.3);
 }
 
 /* Language toggle button */
@@ -877,8 +880,9 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 }
 
 #lang-toggle:active{
+  background: var(--color-lime-bright);
+  color: var(--color-teal-primary);
   animation: btn-press-lang 220ms ease-out;
-  filter: brightness(1.3);
 }
 
 </style>
