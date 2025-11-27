@@ -492,6 +492,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 /* provide a brief click/press animation so share/info buttons respond visually */
 .btn:active{
   animation: btn-press 220ms ease-out;
+  filter: brightness(1.1);
 }
 
 /* Info button positioned inside .card so its center aligns with the card's bottom edge */
@@ -616,8 +617,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 .touch-device #mode-info-btn:active,
 .touch-device #lang-toggle:active {
   filter: brightness(1.1);
-  /*transform: scale(0.98);
-  transition: all 0.1s ease;*/
+  animation: btn-press 220ms ease-out;
 }
 
 /* Touch feedback for mobile devices */
@@ -626,8 +626,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 #mode-info-btn:active,
 #lang-toggle:active {
   filter: brightness(1.1);
-  /*transform: scale(0.98);
-  transition: all 0.1s ease;*/
+  animation: btn-press 220ms ease-out;
 }
 
 @keyframes btn-pulse{
@@ -857,6 +856,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 /* Use shared press animation which respects the --anchor variable */
 #mode-info-btn:active/*,.btn-clipboard:active*/{
   animation: btn-press 220ms ease-out;
+  filter: brightness(1.1);
 }
 
 /* Language toggle button */
@@ -884,6 +884,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 
 #lang-toggle:active{
   animation: btn-press-lang 220ms ease-out;
+  filter: brightness(1.1);
 }
 
 </style>
