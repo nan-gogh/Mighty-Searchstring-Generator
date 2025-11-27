@@ -587,12 +587,6 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   outline: none;
 }
 
-.touch-device .btn:active {
-  background: var(--color-lime-bright);
-  color: var(--color-teal-primary);
-  animation: btn-press 220ms ease-out;
-}
-
 /* Touch feedback for mobile devices */
 .btn:active {
   background: var(--color-lime-bright);
@@ -886,14 +880,6 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 </header>
 
 <script>
-// Touch device detection for better hover handling
-// Only classify as touch device if it's primarily touch-based (not desktop with touch support)
-if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && 
-    (window.innerWidth <= 1024 || window.innerHeight <= 768 || 
-     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone|WPDesktop|Silk|CriOS|FxiOS|Mobile|Tablet|Kindle|BB10|PlayBook/i.test(navigator.userAgent))) {
-  document.body.classList.add('touch-device');
-}
-
 // ===== LANGUAGE SYSTEM =====
 const TRANSLATIONS = {
   de: {
