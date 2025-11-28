@@ -12,39 +12,47 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ========================================================================
+   CSS VARIABLES
+   ======================================================================== */
+
 :root{
-  --color-bg-dark-teal: #1a1500;
-  --color-bg-charcoal: #0f1011;
-  --color-lime-bright: hsl(54, 100%, 80%);
-  --color-teal-primary: rgb(255, 191, 0);
-  --color-teal-brighter: hsl(45, 100%, 60%);
-  --color-teal-darker: hsl(45, 100%, 40%);
+  /* Colors */
+  --color-bg-dark-brown: #1a1500;
+  --color-yellow-bright: hsl(54, 100%, 80%);
+  --color-gold-primary: rgb(255, 191, 0);
+  --color-gold-brighter: hsl(45, 100%, 60%);
+  --color-gold-darker: hsl(45, 100%, 40%);
   --color-charcoal-dark: #1a1b1c;
-  --color-border-subtle: rgba(255,255,255,0.03);
-  --color-focus-blue: rgba(78, 144, 254, 0.12);
-  --header-control-effective: clamp(min(140px, 95vw), 85vw, 300px);
-  --radius: 999px;
+  
+  /* Layout */
+  --content-max-width: clamp(min(140px, 95vw), 85vw, 300px);
+  --button-border-radius: 999px;
+  
+  /* Transitions */
   --transition-smooth: 520ms cubic-bezier(.2,0,.2,1);
   --transition-fast: 120ms ease;
+  
+  /* Fonts */
   --font-display: 'Orbitron', Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   --font-mono: 'Space Grotesk', ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
-  --lime: 255,237,78;
-  --teal: 255,191,0;
-  --lime-100: rgba(var(--lime),1);
-  --lime-95: rgba(var(--lime),.95);
-  --lime-60: rgba(var(--lime),.6);
-  --lime-55: rgba(var(--lime),.55);
-  --lime-40: rgba(var(--lime),.4);
-  --lime-16: rgba(var(--lime),.16);
-  --lime-14: rgba(var(--lime),.14);
-  --lime-10: rgba(var(--lime),.1);
-  --lime-08: rgba(var(--lime),.08);
-  --lime-06: rgba(var(--lime),.06);
-  --glow-subtle: rgba(var(--lime),.12);
-  --glow-mid: rgba(var(--teal),.06);
-  --glow-strong: rgba(var(--lime),.8);
-  --glow-strong-teal: rgba(var(--teal),.8);
-  --particles-count: 12;
+  
+  /* Color system - RGB values for opacity variants */
+  --yellow-rgb: 255,237,78;
+  --gold-rgb: 255,191,0;
+  --yellow-100: rgba(var(--yellow-rgb),1);
+  --yellow-95: rgba(var(--yellow-rgb),.95);
+  --yellow-55: rgba(var(--yellow-rgb),.55);
+  --yellow-40: rgba(var(--yellow-rgb),.4);
+  --yellow-14: rgba(var(--yellow-rgb),.14);
+  --yellow-10: rgba(var(--yellow-rgb),.1);
+  --yellow-06: rgba(var(--yellow-rgb),.06);
+  --glow-yellow-subtle: rgba(var(--yellow-rgb),.12);
+  --glow-gold-subtle: rgba(var(--gold-rgb),.06);
+  --glow-yellow-strong: rgba(var(--yellow-rgb),.8);
+  --glow-gold-strong: rgba(var(--gold-rgb),.8);
+  
+  /* Particles */
   --particles-dur-min: 6s;
   --particles-dur-max: 14s;
   --particles-size-min: 8px;
@@ -52,145 +60,28 @@
   --particles-drift-max: 120px;
   --particles-delay-range: 10s;
   --particles-blur: 6px;
-  --particles-opacity-peak: 1;
   --particles-travel-vh: 640vh;
+  
+  /* Click effects */
+  --click-burst-count: 6;
+  --click-burst-size-min: 4px;
+  --click-burst-size-max: 10px;
+  --click-burst-radius-min: 3px;
+  --click-burst-radius-max: 12px;
+  --click-burst-duration: 1040ms;
+  
+  /* Animations */
+  --header-bob-duration: 4s;
+  --bottom-pulse-duration: var(--header-bob-duration);
   --bottom-pulse-height: 50vh;
-    --bottom-pulse-opacity: 0.5;
-    /* Keep a single source of truth for the header "bob" timing and reuse it
-      for the bottom pulse so both visuals stay in sync. Change this value
-      to alter the timing for both animations. */
-    --header-bob-duration: 4s;
-    --bottom-pulse-duration: var(--header-bob-duration);
-    /* Fade-from-black intro duration (seconds or ms via CSS variable parsing) */
-    --fade-duration: 700ms;
+  --bottom-pulse-opacity: 0.5;
   --bottom-pulse-max: 100vh;
+  --fade-duration: 700ms;
 }
 
-/* Text selection styling — match the site's lime/teal theme.
-   Use CSS variables so users can tweak selection colors in :root. */
-::selection{ background: var(--color-teal-primary); color: var(--color-lime-bright); }
-::-moz-selection{ background: var(--color-teal-primary); color: var(--color-lime-bright); }
-
-/* Also ensure selection inside form controls (textarea/input) uses same colors */
-textarea::selection, input::selection, select::selection{
-  background: var(--color-teal-primary);
-  color: var(--color-lime-bright);
-}
-
-/* Bottom pulse: a subtle animated linear gradient rising from the viewport bottom */
-.bottom-pulse{
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--bottom-pulse-height, 22vh);
-  pointer-events: none;
-  z-index: 0;
-  background: linear-gradient(to top, var(--color-lime-bright) 0%, rgba(255,237,78,0.66) 18%, rgba(255,237,78,0.18) 36%, transparent 100%);
-  opacity: 0;
-  will-change: height, opacity;
-  mix-blend-mode: screen;
-  filter: blur(14px);
-  animation: bottom-pulse-anim var(--bottom-pulse-duration, 3800ms) ease-in-out infinite;
-}
-
-/* Opening (scroll-unroll) animation: initial collapsed state when
-   `body.opening` is present. Removing the class triggers transitions
-   that animate the card "unrolling" and the info button sliding down. */
-.card{
-  /* allow a transform transition so unroll animates smoothly */
-  transition: transform 820ms cubic-bezier(.2,.9,.2,1), max-height var(--transition-smooth);
-  transform-origin: top center;
-}
-
-/* Collapsed initial state: card squashed into the clipboard button and
-   info button positioned near the clipboard. Removing `body.opening` will
-   animate these properties back to their normal values, producing a
-   scroll-unroll effect. */
-body.opening .card{
-  transform: scaleY(0.12) translateZ(0);
-}
-body.opening #mode-info-btn{
-  /* Move the info button up so it sits under the clipboard button */
-  transform: translateY(-160%);
-}
-
-@media (prefers-reduced-motion: reduce){
-  .card, #mode-info-btn{ transition: none; }
-  body.opening .card{ transform: none; }
-  body.opening #mode-info-btn{ transform: var(--anchor); }
-}
-
-@keyframes bottom-pulse-anim{
-  0%{ height: var(--bottom-pulse-height, 50vh); opacity: 0.25; }
-  /*20%{ height: calc(var(--bottom-pulse-max, 50vh) * 0.5); opacity: calc(var(--bottom-pulse-opacity, 0.14) * 0.5); }*/
-  50%{ height: var(--bottom-pulse-max, 100vh); opacity: 0.75; }
-  /*80%{ height: calc(var(--bottom-pulse-max, 50vh) * 0.5); opacity: calc(var(--bottom-pulse-opacity, 0.14) * 0.45); }*/
-  100%{ height: var(--bottom-pulse-height, 50vh); opacity: 0.25; }
-}
-
-@media (prefers-reduced-motion: reduce){
-  .bottom-pulse{ animation: none; opacity: var(--bottom-pulse-opacity, 0.14); height: var(--bottom-pulse-height, 50vh); }
-}
-
-/* Animated horizontal wave background (ocean waves moving upward) */
-.grid-background{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-  opacity: 0.18;
-}
-
-.grid-background::before,
-.grid-background::after{
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -160px;
-  height: 200vh;
-  /* SVG-based sine wave pattern that tiles horizontally */
-  background-image: url('data:image/svg+xml;utf8,<svg width="200" height="160" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:hsl(54, 100%, 80%);stop-opacity:0.8" /><stop offset="100%" style="stop-color:transparent;stop-opacity:0" /></linearGradient></defs><path d="M -50 80 Q -25 60, 0 80 T 50 80 T 100 80 T 150 80 T 200 80 T 250 80 L 250 160 L -50 160 Z" fill="url(%23g1)" vector-effect="non-scaling-stroke"/><path d="M -50 100 Q -25 80, 0 100 T 50 100 T 100 100 T 150 100 T 200 100 T 250 100 L 250 160 L -50 160 Z" fill="url(%23g1)" opacity="0.6" vector-effect="non-scaling-stroke"/><path d="M -50 120 Q -25 100, 0 120 T 50 120 T 100 120 T 150 120 T 200 120 T 250 120 L 250 160 L -50 160 Z" fill="url(%23g1)" opacity="0.4" vector-effect="non-scaling-stroke"/></svg>');
-  background-size: 200px 160px;
-  background-repeat: repeat;
-  animation: waves-rise 12s linear infinite;
-}
-
-.grid-background::after{
-  animation-delay: -6s;
-  opacity: 0.7;
-}
-
-/* Fade-from-black overlay */
-#fade-overlay{
-  position: fixed;
-  inset: 0;
-  background: #000;
-  z-index: 10050; /* above header and particles */
-  opacity: 1;
-  pointer-events: none;
-  transition: opacity var(--fade-duration, 700ms) ease;
-}
-body.loaded #fade-overlay{ opacity: 0; }
-
-@media (prefers-reduced-motion: reduce){
-  #fade-overlay{ transition: none; opacity: 0; display: none; }
-}
-
-@keyframes waves-rise{
-  0%{ transform: translateY(0); }
-  100%{ transform: translateY(-160px); }
-}
-
-@media (prefers-reduced-motion: reduce){
-  .grid-background::before,
-  .grid-background::after{
-    animation: none;
-    opacity: 0.3;
-  }
-}
+/* ========================================================================
+   BASE & RESET STYLES
+   ======================================================================== */
 
 html{box-sizing:border-box}
 *,*::before,*::after{box-sizing:inherit}
@@ -203,9 +94,22 @@ html,body{
   -ms-touch-action: pan-x pan-y;
 }
 
+/* Text selection styling */
+::selection{ background: var(--color-gold-primary); color: var(--color-yellow-bright); }
+::-moz-selection{ background: var(--color-gold-primary); color: var(--color-yellow-bright); }
+
+textarea::selection, input::selection, select::selection{
+  background: var(--color-gold-primary);
+  color: var(--color-yellow-bright);
+}
+
+/* ========================================================================
+   LAYOUT & STRUCTURE
+   ======================================================================== */
+
 body{
-  background:var(--color-bg-dark-teal);
-  color:var(--color-teal-primary);
+  background:var(--color-bg-dark-brown);
+  color:var(--color-gold-primary);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   position:relative;
@@ -232,7 +136,7 @@ body::after{
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background: radial-gradient(circle var(--glow-size, 420px) at var(--glow-x, 50%) var(--glow-y, 30%), var(--color-teal-primary) 0%, var(--color-teal-primary) 25%, var(--lime-40) 50%, transparent 100%);
+  background: radial-gradient(circle var(--glow-size, 420px) at var(--glow-x, 50%) var(--glow-y, 30%), var(--color-gold-primary) 0%, var(--color-gold-primary) 25%, var(--yellow-40) 50%, transparent 100%);
   filter: blur(8px);
   opacity: 1.0;
 }
@@ -241,7 +145,7 @@ body > *{position:relative;z-index:1}
 
 header{
   background: transparent;
-  color:var(--color-teal-primary); 
+  color:var(--color-gold-primary); 
   padding:clamp(8px, 2.5vw, 18px) 0 clamp(4px, 1vw, 6px) 0;
   display:flex;
   flex-direction:column;
@@ -254,7 +158,7 @@ header{
 
 .header-svg-container{
   position: relative;
-  width: var(--header-control-effective);
+  width: var(--content-max-width);
   height: auto;
   aspect-ratio: 188.38 / 148.46;
   flex: 0 0 auto;
@@ -270,7 +174,7 @@ header{
   height: 100%;
   object-fit: contain;
   border-radius: 0;
-  filter: drop-shadow(0 0 20px var(--color-lime-bright));
+  filter: drop-shadow(0 0 20px var(--color-yellow-bright));
   transform-origin: center;
   transform-box: fill-box;
   will-change: transform, filter;
@@ -283,7 +187,7 @@ header{
   /* Use the shared header bob duration variable so the crown and bottom
      pulse stay synchronized. */
   animation: img-bob var(--header-bob-duration, 4s) ease-in-out infinite;
-  filter: drop-shadow(0 0 10px var(--color-lime-bright)) drop-shadow(0 0 30px var(--lime-40));
+  filter: drop-shadow(0 0 10px var(--color-yellow-bright)) drop-shadow(0 0 30px var(--yellow-40));
 }
 
 /* Energy particle container - optimized for mobile performance */
@@ -296,7 +200,7 @@ header{
   z-index: 0;
   overflow: visible;
   /* Add glow via box-shadow on container instead of filter on each particle */
-  filter: drop-shadow(0 0 8px var(--color-lime-bright)) drop-shadow(0 0 20px var(--lime-40));
+  filter: drop-shadow(0 0 8px var(--color-yellow-bright)) drop-shadow(0 0 20px var(--yellow-40));
 }
 
 /* Individual energy particle */
@@ -328,36 +232,40 @@ header{
 
 .header-actions .btn{
   padding:clamp(8px, 2vw, 10px) clamp(14px, 3vw, 18px);
-  border-radius:var(--radius);
+  border-radius:var(--button-border-radius);
   /* match the card width so buttons visually enclose the card */
-  width: var(--header-control-effective);
+  width: var(--content-max-width);
   max-width:100%;
   display:block;
   margin:0 auto;
 }
 
+/* ========================================================================
+   TYPOGRAPHY
+   ======================================================================== */
+
 h1{
   margin: clamp(8px, 2vw, 12px) auto 0 auto;
   font-family: var(--font-display);
-  font-size: clamp(12px, calc(var(--header-control-effective) * 0.07), 40px);
+  font-size: clamp(12px, calc(var(--content-max-width) * 0.07), 40px);
   font-weight:600;
   text-align:center;
   white-space: normal;
   overflow: visible;
-  width: var(--header-control-effective);
+  width: var(--content-max-width);
   max-width: 100%;
   box-sizing: border-box;
   padding: 0;
   line-height:1.15;
   padding-bottom: clamp(4px, 1vw, 6px);
   letter-spacing: 0.1em;
-  -webkit-text-stroke: 0.25px var(--color-lime-bright);
-  text-shadow: -0.6px -0.6px 0 var(--color-lime-bright), 0.6px -0.6px 0 var(--color-lime-bright), -0.6px 0.6px 0 var(--color-lime-bright), 0.6px 0.6px 0 var(--color-lime-bright), 0 0 20px var(--color-lime-bright), 0 0 30px var(--lime-40);
+  -webkit-text-stroke: 0.25px var(--color-yellow-bright);
+  text-shadow: -0.6px -0.6px 0 var(--color-yellow-bright), 0.6px -0.6px 0 var(--color-yellow-bright), -0.6px 0.6px 0 var(--color-yellow-bright), 0.6px 0.6px 0 var(--color-yellow-bright), 0 0 20px var(--color-yellow-bright), 0 0 30px var(--yellow-40);
   animation: unified-glow 3s ease-in-out infinite;
 }
 
 header h1:first-of-type{
-  font-size: clamp(16px, calc(var(--header-control-effective) * 0.07), 48px);
+  font-size: clamp(16px, calc(var(--content-max-width) * 0.07), 48px);
   margin-bottom: clamp(6px, 2vw, 12px);
 }
 
@@ -365,16 +273,16 @@ header h2{
   font-size:clamp(16px, 4.5vw, 36px);
   margin:0 auto;
   font-weight:600;
-  color:var(--color-teal-primary);
+  color:var(--color-gold-primary);
   text-align:center;
   width:100%;
-  max-width:var(--header-control-effective);
+  max-width:var(--content-max-width);
   box-sizing:border-box;
   line-height:1.2;
 }
 
 .p-muted{
-  color:var(--color-teal-primary);
+  color:var(--color-gold-primary);
   margin:0 0 clamp(6px, 1.5vw, 8px) 0;
   font-size:clamp(0.85rem, 2vw, 0.95rem);
 }
@@ -382,7 +290,7 @@ header h2{
 .p-muted.small{
   display:block;
   width:100%;
-  max-width:var(--header-control-effective);
+  max-width:var(--content-max-width);
   margin:clamp(8px, 2vw, 12px) auto 0;
   text-align:center;
   font-size: clamp(11px, 2.5vw, 14px);
@@ -391,7 +299,7 @@ header h2{
 }
 
 .card{
-  background:var(--color-lime-bright);
+  background:var(--color-yellow-bright);
     padding:clamp(25px, 4vw, 35px) clamp(12px, 3vw, 18px) clamp(25px, 3vw, 18px) clamp(12px, 3vw, 18px);
     margin-bottom:clamp(10px, 2.5vw, 16px);
   /* reduce top spacing so the clipboard button sits closer to the headline */
@@ -399,7 +307,7 @@ header h2{
   border:none;
   position:relative;
   z-index:1;
-  width: var(--header-control-effective);
+  width: var(--content-max-width);
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -415,7 +323,7 @@ header h2{
   align-items:stretch;
   gap: clamp(10px, 2vw, 14px);
   /* steady glow to match header/controls (no pulsation) */
-  box-shadow: 0 0 72px var(--glow-strong-teal), 0 0 40px var(--glow-strong);
+  box-shadow: 0 0 72px var(--glow-gold-strong), 0 0 40px var(--glow-yellow-strong);
 }
 
 textarea{
@@ -427,8 +335,8 @@ textarea{
   margin-top: clamp(20px, 4vw, 30px);
   margin-left: clamp(2px, 0vw, 5px);
     border:none;
-    background:var(--color-lime-bright);
-    color:var(--color-teal-darker);
+    background:var(--color-yellow-bright);
+    color:var(--color-gold-darker);
     /* Prefer Space Grotesk (variable) for textarea content; fallback stack kept in --font-mono */
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
@@ -451,9 +359,13 @@ textarea:focus{
 /* hide webkit scrollbar */
 textarea::-webkit-scrollbar{ width:0; height:0; }
 
+/* ========================================================================
+   BUTTONS & INTERACTIVE ELEMENTS
+   ======================================================================== */
+
 .btn{
-  background: var(--color-teal-primary);
-  color: var(--color-lime-bright);
+  background: var(--color-gold-primary);
+  color: var(--color-yellow-bright);
   padding:clamp(8px, 2vw, 10px) clamp(12px, 2.5vw, 14px);
   border:none;
   font-weight:600;
@@ -468,7 +380,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   justify-content: center;
   align-items: center;
   text-align: center;
-  border-radius: var(--radius);
+  border-radius: var(--button-border-radius);
   box-sizing: border-box;
   transform-origin: center;
   will-change: transform;
@@ -509,7 +421,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   max-width: 100%;
   /* center text content inside the anchored button across sizes/lines */
   white-space: normal;
-  box-shadow: 0 8px 18px var(--glow-subtle), 0 0 10px var(--glow-mid);
+  box-shadow: 0 8px 18px var(--glow-yellow-subtle), 0 0 10px var(--glow-gold-subtle);
 
   /* Use display font variable for Info / Back labels so they visually match the clipboard button */
   font-family: var(--font-display);
@@ -524,33 +436,19 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   color:rgba(255,255,255,0.85);
 }
 
-.btn.success{
-  background:var(--color-teal-primary);
-  color:white;
-  border:none;
-  transform-origin:center;
-  animation:btn-pulse 360ms ease-out 1;
-}
-
-.btn.error{
-  background:var(--color-charcoal-dark);
-  color:white;
-  border-color:rgba(255,255,255,0.06);
-}
-
 /* clipboard button grouped with primary button rules */
 .btn-clipboard{
-  background: var(--color-teal-primary);
-  color: var(--color-lime-bright);
+  background: var(--color-gold-primary);
+  color: var(--color-yellow-bright);
   padding:clamp(12px, 3vw, 16px) clamp(20px, 4vw, 28px);
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: 0.1em;
-  -webkit-text-stroke: min(0.25px, 0.03em) var(--color-lime-bright);
-  text-shadow: 0 0 min(8px, 0.8em) var(--color-lime-bright), 0 0 min(12px, 1.2em) var(--color-lime-bright);
+  -webkit-text-stroke: min(0.25px, 0.03em) var(--color-yellow-bright);
+  text-shadow: 0 0 min(8px, 0.8em) var(--color-yellow-bright), 0 0 min(12px, 1.2em) var(--color-yellow-bright);
   cursor: pointer;
   /* sizing matches `.header-actions .btn` so it adapts the same on narrow screens */
-  width: var(--header-control-effective);
+  width: var(--content-max-width);
   height: 60px; /* Fixed height for consistency across languages */
   max-width: 100%;
   box-sizing: border-box;
@@ -566,12 +464,12 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 }
 
 .btn-clipboard.success{
-  background: var(--color-lime-bright);
-  color: var(--color-teal-primary);
-  width: var(--header-control-effective);
+  background: var(--color-yellow-bright);
+  color: var(--color-gold-primary);
+  width: var(--content-max-width);
   max-width: 100%;
   border:none;
-  box-shadow: 0 8px 22px var(--lime-10);
+  box-shadow: 0 8px 22px var(--yellow-10);
   animation: btn-pulse 600ms ease-out 1, btn-glow-up 600ms ease-out 1;
   -webkit-text-stroke: 0;
   text-shadow: none;
@@ -589,42 +487,221 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 
 /* Touch feedback for mobile devices */
 .btn:active {
-  background: var(--color-lime-bright);
-  color: var(--color-teal-primary);
+  --btn-press-scale: 1.02;
+  background: var(--color-yellow-bright);
+  color: var(--color-gold-primary);
   animation: btn-press 220ms ease-out;
 }
 
 .btn-clipboard:active {
-  background: var(--color-teal-brighter);
-  color: var(--color-lime-bright);
+  background: var(--color-gold-brighter);
+  color: var(--color-yellow-bright);
+}
+
+/* ========================================================================
+   VISUAL EFFECTS & OVERLAYS
+   ======================================================================== */
+
+/* Bottom pulse: subtle animated gradient from viewport bottom */
+.bottom-pulse{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--bottom-pulse-height, 22vh);
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(to top, var(--color-yellow-bright) 0%, rgba(255,237,78,0.66) 18%, rgba(255,237,78,0.18) 36%, transparent 100%);
+  opacity: 0;
+  will-change: height, opacity;
+  mix-blend-mode: screen;
+  filter: blur(14px);
+  animation: bottom-pulse-anim var(--bottom-pulse-duration, 3800ms) ease-in-out infinite;
+}
+
+/* Animated wave background */
+.grid-background{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.18;
+}
+
+.grid-background::before,
+.grid-background::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -160px;
+  height: 200vh;
+  background-image: url('data:image/svg+xml;utf8,<svg width="200" height="160" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:hsl(54, 100%, 80%);stop-opacity:0.8" /><stop offset="100%" style="stop-color:transparent;stop-opacity:0" /></linearGradient></defs><path d="M -50 80 Q -25 60, 0 80 T 50 80 T 100 80 T 150 80 T 200 80 T 250 80 L 250 160 L -50 160 Z" fill="url(%23g1)" vector-effect="non-scaling-stroke"/><path d="M -50 100 Q -25 80, 0 100 T 50 100 T 100 100 T 150 100 T 200 100 T 250 100 L 250 160 L -50 160 Z" fill="url(%23g1)" opacity="0.6" vector-effect="non-scaling-stroke"/><path d="M -50 120 Q -25 100, 0 120 T 50 120 T 100 120 T 150 120 T 200 120 T 250 120 L 250 160 L -50 160 Z" fill="url(%23g1)" opacity="0.4" vector-effect="non-scaling-stroke"/></svg>');
+  background-size: 200px 160px;
+  background-repeat: repeat;
+  animation: waves-rise 12s linear infinite;
+}
+
+.grid-background::after{
+  animation-delay: -6s;
+  opacity: 0.7;
+}
+
+/* Fade overlay */
+#fade-overlay{
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 10050;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity var(--fade-duration, 700ms) ease;
+}
+body.loaded #fade-overlay{ opacity: 0; }
+
+/* Opening animation states */
+.card{
+  transition: transform 820ms cubic-bezier(.2,.9,.2,1), max-height var(--transition-smooth);
+  transform-origin: top center;
+}
+
+body.opening .card{
+  transform: scaleY(0.12) translateZ(0);
+}
+body.opening #mode-info-btn{
+  transform: translateY(-160%);
+}
+
+/* ========================================================================
+   PARTICLE SYSTEMS
+   ======================================================================== */
+
+/* Global floating particles */
+.particles{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:10005;
+  overflow:visible;
+}
+.particles .particle{
+  position:absolute;
+  bottom:0;
+  background: radial-gradient(circle at 40% 30%, var(--yellow-95) 0%, var(--yellow-55) 30%, var(--glow-gold-subtle) 60%, rgba(255,191,0,0) 100%);
+  border-radius:50%;
+  filter: blur(var(--particles-blur, 6px));
+  opacity:0;
+  transform: translateY(0) translateX(0) scale(1);
+  will-change: transform, opacity, filter;
+  mix-blend-mode: screen;
+  transition: opacity 160ms linear;
+  animation: particle-up var(--dur, 6s) linear infinite;
+}
+
+/* Crown particles */
+.crown-particles{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:10003;
+  overflow:visible;
+  contain: layout;
+}
+.crown-particles .particle-crown{
+  position:absolute;
+  background: var(--yellow-100);
+  border-radius:50%;
+  filter: blur(2.5px);
+  opacity:0;
+  transform: translateY(0) translateX(0) scale(1);
+  will-change: transform, opacity, filter;
+  mix-blend-mode: screen;
+  transition: opacity 120ms linear;
+  animation: crown-particle-up var(--dur, 1s) linear infinite;
+  animation-fill-mode: both;
+}
+
+/* Crown particles small layer */
+.crown-particles-small{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:10002;
+  overflow:visible;
+  contain: layout;
+}
+.crown-particles-small .particle-crown-small{
+  position:absolute;
+  background: var(--yellow-100);
+  border-radius:50%;
+  opacity:0;
+  transform: translateY(0) translateX(0) scale(1);
+  will-change: transform, opacity, filter;
+  mix-blend-mode: screen;
+  transition: opacity 120ms linear;
+  animation: crown-particle-small-up var(--dur, 1s) linear infinite;
+  animation-fill-mode: both;
+}
+
+/* Click effects */
+.click-pulse{
+  z-index:10003;
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, var(--color-gold-primary) 0%, var(--color-gold-primary) 50%, var(--color-yellow-bright) 60%, var(--yellow-06) 70%, var(--yellow-06) 100%);
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: click-pulse-grow 520ms ease-out forwards;
+}
+
+.click-burst-particle{
+  z-index:10004;
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, var(--yellow-95) 0%, var(--yellow-55) 30%, rgba(255,191,0,0) 80%);
+  opacity: 1;
+  will-change: transform, opacity;
+  filter: blur(1.5px);
+  mix-blend-mode: screen;
+  animation: burst-fly var(--click-burst-duration, 520ms) cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+/* ========================================================================
+   ANIMATIONS
+   ======================================================================== */
+
+/* Button animations */
+@keyframes btn-press{
+  0%,100%{transform:var(--anchor) scale(1)}
+  50%{transform:var(--anchor) scale(var(--btn-press-scale, 1.02))}
 }
 
 @keyframes btn-pulse{
-  0%,100%{transform:var(--anchor) scale(1);box-shadow:0 6px 18px var(--lime-06)}
-  50%{transform:var(--anchor) scale(1.06);box-shadow:0 12px 30px var(--lime-14)}
+  0%,100%{transform:var(--anchor) scale(1);box-shadow:0 6px 18px var(--yellow-06)}
+  50%{transform:var(--anchor) scale(1.06);box-shadow:0 12px 30px var(--yellow-14)}
 }
 
 @keyframes btn-glow-up{
-  0%{box-shadow:0 8px 22px var(--lime-10)}
-  30%{box-shadow:0 26px 72px var(--lime-100), 0 0 60px var(--lime-100)}
-  60%{box-shadow:0 36px 110px var(--lime-100), 0 0 90px var(--lime-100)}
-  100%{box-shadow:0 8px 22px var(--lime-10)}
+  0%{box-shadow:0 8px 22px var(--yellow-10)}
+  30%{box-shadow:0 26px 72px var(--yellow-100), 0 0 60px var(--yellow-100)}
+  60%{box-shadow:0 36px 110px var(--yellow-100), 0 0 90px var(--yellow-100)}
+  100%{box-shadow:0 8px 22px var(--yellow-10)}
 }
 
-/* Unified glow animation (replaces btn-glow, h1-glow, img-glow) */
+/* Visual effect animations */
 @keyframes unified-glow{
   0%,100%{opacity:.9}
   50%{opacity:1}
-}
- 
-@keyframes btn-press{
-  0%,100%{transform:var(--anchor) scale(1)}
-  50%{transform:var(--anchor) scale(1.02)}
-}
-
-@keyframes btn-press-lang{
-  0%,100%{transform:var(--anchor) scale(1)}
-  50%{transform:var(--anchor) scale(1.1)}
 }
 
 @keyframes img-bob{
@@ -668,7 +745,7 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 .particles .particle{
   position:absolute;
   bottom:0;
-  background: radial-gradient(circle at 40% 30%, var(--lime-95) 0%, var(--lime-55) 30%, var(--glow-mid) 60%, rgba(255,191,0,0) 100%);
+  background: radial-gradient(circle at 40% 30%, var(--yellow-95) 0%, var(--yellow-55) 30%, var(--glow-gold-subtle) 60%, rgba(255,191,0,0) 100%);
   border-radius:50%;
   filter: blur(var(--particles-blur, 6px));
   opacity:0;
@@ -680,22 +757,17 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 }
 
 /* Click / touch pulse animation (spawn at pointer position) */
-:root{
-  --click-pulse-color: rgba(255,237,78,0.9);
-  --click-pulse-size: 120px; /* default max size of pulse */
-  --click-pulse-duration: 520ms;
-}
 .click-pulse{
   z-index:10003;
   position: absolute;
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, var(--color-teal-primary) 0%, var(--color-teal-primary) 50%, var(--color-lime-bright) 60%, var(--lime-06) 70%, var(--lime-06) 100%);
+  background: radial-gradient(circle at 50% 50%, var(--color-gold-primary) 0%, var(--color-gold-primary) 50%, var(--color-yellow-bright) 60%, var(--yellow-06) 70%, var(--yellow-06) 100%);
   transform: translate(-50%, -50%) scale(0.2);
   opacity: 0;
   will-change: transform, opacity;
   /*mix-blend-mode: screen;*/
-  animation: click-pulse-grow var(--click-pulse-duration, 520ms) ease-out forwards;
+  animation: click-pulse-grow 520ms ease-out forwards;
 }
 
 @keyframes click-pulse-grow{
@@ -707,20 +779,12 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 /* Click effects: particle burst only (SVG pulse removed) */
 
 /* Click burst particles (short-lived radial burst atop the pulse) */
-:root{
-  --click-burst-count: 6;
-  --click-burst-size-min: 4px;
-  --click-burst-size-max: 10px;
-  --click-burst-radius-min: 3px;
-  --click-burst-radius-max: 12px;
-  --click-burst-duration: 1040ms;
-}
 .click-burst-particle{
   z-index:10004;
   position: fixed;
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 30%, var(--lime-95) 0%, var(--lime-55) 30%, rgba(255,191,0,0) 80%);
+  background: radial-gradient(circle at 40% 30%, var(--yellow-95) 0%, var(--yellow-55) 30%, rgba(255,191,0,0) 80%);
   opacity: 1;
   will-change: transform, opacity;
   filter: blur(1.5px);
@@ -734,67 +798,17 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   100%{ opacity: 1; transform: translate3d(var(--start-x, 0px), var(--end-y, 0px), 0) scale(0); }
 }
 
+/* Particle animations */
 @keyframes particle-up{
   0%{ opacity: 0; transform: translateY(0) translateX(0) scale(1); }
   8%{ opacity: 1; }
-  /* extend the global particles' travel so they float further up the viewport */
   100%{ opacity: 0; transform: translateY(calc(-1 * var(--particles-travel-vh, 320vh))) translateX(var(--drift, 0px)) scale(0.6); }
-}
-
-/* Crown particle system above the crown */
-.crown-particles{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:10003; /* above crown (10001) and energy particles */
-  overflow:visible;
-  contain: layout;
-}
-.crown-particles .particle-crown{
-  position:absolute;
-  background: var(--lime-100);
-  border-radius:50%;
-  filter: blur(2.5px);
-  opacity:0;
-  transform: translateY(0) translateX(0) scale(1);
-  will-change: transform, opacity, filter;
-  mix-blend-mode: screen;
-  transition: opacity 120ms linear;
-  animation: crown-particle-up var(--dur, 1s) linear infinite;
-  animation-fill-mode: both;
 }
 
 @keyframes crown-particle-up{
   0%{ opacity: 0; transform: translateY(0px) translateX(0px) scale(0); }
   10%{ opacity: 0.1; transform: translateY(0px) translateX(0px) scale(10); }
   100%{ opacity: 0; transform: translateY(var(--flight-y, -200px)) translateX(0px) scale(0.3); }
-}
-
-/* Crown particle system small - second layer */
-.crown-particles-small{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:10002; /* above first crown particles */
-  overflow:visible;
-  contain: layout;
-}
-.crown-particles-small .particle-crown-small{
-  position:absolute;
-  background: var(--lime-100);
-  border-radius:50%;
-  /*filter: blur(1.5px);*/
-  opacity:0;
-  transform: translateY(0) translateX(0) scale(1);
-  will-change: transform, opacity, filter;
-  mix-blend-mode: screen;
-  transition: opacity 120ms linear;
-  animation: crown-particle-small-up var(--dur, 1s) linear infinite;
-  animation-fill-mode: both;
 }
 
 @keyframes crown-particle-small-up{
@@ -804,29 +818,54 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   100%{ opacity: 0.1; transform: translateY(var(--flight-y, -200px)) translateX(0px) scale(0.1); }
 }
 
+@keyframes click-pulse-grow{
+  0%{ opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  30%{ opacity: 0.1; transform: translate(-50%, -50%) scale(0.9); }
+  100%{ opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+}
+
+@keyframes burst-fly{
+  0%{ opacity: 0; transform: translate3d(var(--start-x, 0px), var(--start-y, 0px), 0) scale(0.2); }
+  15%{ opacity: 0.5; transform: translate3d(var(--start-x, 0px), var(--start-y, 0px), 0) scale(2); }
+  100%{ opacity: 1; transform: translate3d(var(--start-x, 0px), var(--end-y, 0px), 0) scale(0); }
+}
+
+@keyframes bottom-pulse-anim{
+  0%{ height: var(--bottom-pulse-height, 50vh); opacity: 0.25; }
+  50%{ height: var(--bottom-pulse-max, 100vh); opacity: 0.75; }
+  100%{ height: var(--bottom-pulse-height, 50vh); opacity: 0.25; }
+}
+
+@keyframes waves-rise{
+  0%{ transform: translateY(0); }
+  100%{ transform: translateY(-160px); }
+}
+
+@keyframes languageFlip {
+  0% { transform: perspective(1000px) rotateY(0deg); }
+  100% { transform: perspective(1000px) rotateY(180deg) scaleX(-1); }
+}
+
+/* ========================================================================
+   UTILITY CLASSES
+   ======================================================================== */
+
 .header-actions, .card {
   min-width: 0;
   max-width: 100%;
 }
 
-/* Language change animation - rotating card flip */
 .header-actions {
   transform-style: preserve-3d;
 }
 .header-actions.language-flip {
   animation: languageFlip 0.6s ease-in-out;
 }
-@keyframes languageFlip {
-  0% { transform: perspective(1000px) rotateY(0deg); }
-  100% { transform: perspective(1000px) rotateY(180deg) scaleX(-1); }
-}
-/* small-screen media queries removed — layout relies on clamp() and tokens */
-/* Ensure anchored buttons keep their centering translate while hovered/active */
 
-/* Use shared press animation which respects the --anchor variable */
-#mode-info-btn:active/*,.btn-clipboard:active*/{
-  background: var(--color-teal-brighter);
-  color: var(--color-lime-bright);
+#mode-info-btn:active{
+  --btn-press-scale: 1.02;
+  background: var(--color-gold-brighter);
+  color: var(--color-yellow-bright);
   animation: btn-press 220ms ease-out;
 }
 
@@ -837,10 +876,10 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
   top: clamp(12px, 3vw, 20px);
   left: 50%;
   transform: var(--anchor);
-  background: rgba(var(--teal), 1);
-  color: var(--color-lime-bright);
+  background: rgba(var(--gold-rgb), 1);
+  color: var(--color-yellow-bright);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--button-border-radius);
   padding: clamp(6px, 1.5vw, 10px) clamp(12px, 3vw, 18px);
   font-family: var(--font-display);
   font-weight: 600;
@@ -854,9 +893,27 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 }
 
 #lang-toggle:active{
-  background: var(--color-teal-brighter);
-  color: var(--color-lime-bright);
-  animation: btn-press-lang 220ms ease-out;
+  --btn-press-scale: 1.1;
+  background: var(--color-gold-brighter);
+  color: var(--color-yellow-bright);
+  animation: btn-press 220ms ease-out;
+}
+
+/* ========================================================================
+   MEDIA QUERIES & ACCESSIBILITY
+   ======================================================================== */
+
+@media (prefers-reduced-motion: reduce){
+  .card, #mode-info-btn{ transition: none; }
+  body.opening .card{ transform: none; }
+  body.opening #mode-info-btn{ transform: var(--anchor); }
+  .bottom-pulse{ animation: none; opacity: var(--bottom-pulse-opacity, 0.14); height: var(--bottom-pulse-height, 50vh); }
+  #fade-overlay{ transition: none; opacity: 0; display: none; }
+  .grid-background::before,
+  .grid-background::after{
+    animation: none;
+    opacity: 0.3;
+  }
 }
 
 </style>
@@ -885,7 +942,11 @@ textarea::-webkit-scrollbar{ width:0; height:0; }
 </header>
 
 <script>
-// ===== LANGUAGE SYSTEM =====
+/* ========================================================================
+   CONSTANTS & CONFIGURATION
+   ======================================================================== */
+
+// Language translations
 const TRANSLATIONS = {
   de: {
     title: 'MÄCHTIG',
@@ -1019,8 +1080,9 @@ const TRANSLATIONS = {
   }
 };
 
-// Language management
-let currentLang = 'de';
+/* ========================================================================
+   LANGUAGE SYSTEM
+   ======================================================================== */
 
 function detectLanguage() {
   const stored = localStorage.getItem('pokemon-lang');
@@ -1139,12 +1201,6 @@ function updateUILanguage() {
   }
 }
 
-
-// Initialize language on load
-currentLang = detectLanguage();
-
-// Pokemon groups
-// Megastring template with placeholders for dynamic ranges and localized terms
 const MEGASTRING_TEMPLATE = `40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,78,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,78,alter2024&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,78,wp1500-&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,78,!getauscht&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,78,xl,xxl&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,78,3*,4*&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,galar,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,galar,alter2024&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,galar,wp1500-&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,galar,!getauscht&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,galar,xl,xxl&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,38,galar,3*,4*&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,78,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,78,alter2024&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,78,wp1500-&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,78,!getauscht&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,78,xl,xxl&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,78,3*,4*&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,galar,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,galar,alter2024&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,galar,wp1500-&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,galar,!getauscht&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,galar,xl,xxl&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,110,alola,galar,3*,4*&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,78,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,78,alter2024&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,78,wp1500-&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,78,!getauscht&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,78,xl,xxl&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,78,3*,4*&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,alter2024&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,wp1500-&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,!getauscht&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,xl,xxl&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,38,3*,4*&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,78,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,78,alter2024&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,78,wp1500-&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,78,!getauscht&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,78,xl,xxl&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,78,3*,4*&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,alter2024&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,wp1500-&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,!getauscht&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,xl,xxl&40,248,303,359,623,858,862,908,210,229,282,430,445,452,461,480-482,galar,alola,3*,4*&alter2025,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&alter2025,alter2024&alter2025,wp1500-&alter2025,!getauscht&alter2025,xl,xxl&alter2025,3*,4*&wp1500-,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&wp1500-,alter2024&wp1500-&wp1500-,!getauscht&wp1500-,xl,xxl&wp1500-,3*,4*&!getauscht,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&!getauscht,alter2024&!getauscht,wp1500-&!getauscht&!getauscht,xl,xxl&!getauscht,3*,4*&xl,xxl,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&xl,xxl,alter2024&xl,xxl,wp1500-&xl,xxl,!getauscht&xl,xxl&xl,xxl,3*,4*&3*,4*,018,076,130,405,545,596,697,748,003,062,149,160,466,473,604,691&3*,4*,alter2024&3*,4*,wp1500-&3*,4*,!getauscht&3*,4*,xl,xxl&3*,4*`;
 
 function generateTemplate(r24, r25){
@@ -1168,14 +1224,34 @@ function generateTemplate(r24, r25){
 
 const EVENT24_START = new Date(Date.UTC(2024, 10, 23, 0, 0, 0));
 const EVENT24_END   = new Date(Date.UTC(2024, 10, 24, 23, 59, 59));
-
 const EVENT25_START = new Date(Date.UTC(2025, 10, 15, 0, 0, 0));
 const EVENT25_END   = new Date(Date.UTC(2025, 10, 16, 23, 59, 59));
+
+/* ========================================================================
+   STATE MANAGEMENT
+   ======================================================================== */
+
+let currentLang = 'de';
+let cachedString = '';
+let _prevCachedString;
+let searchString = '';
+let timer;
+let _resizeTimer;
+
+// Initialize language on load
+currentLang = detectLanguage();
+
+/* ========================================================================
+   DOM REFERENCES
+   ======================================================================== */
 
 const output = document.getElementById('output');
 const infoBtn = document.getElementById('mode-info-btn');
 
-// CSS variable utility - read numeric/string values with fallbacks
+/* ========================================================================
+   UTILITY OBJECTS & HELPERS
+   ======================================================================== */
+
 const CSS = {
   _root: () => getComputedStyle(document.documentElement),
   num: (name, fallback = 0) => {
@@ -1194,14 +1270,16 @@ const CSS = {
   }
 };
 
-// ResizeObserver for dynamic font scaling
 const resizeObserver = new ResizeObserver(entries => {
   for (let entry of entries) {
     fitTextToButton(entry.target);
   }
 });
 
-// Base particle system with shared init/spawn logic
+/* ========================================================================
+   PARTICLE SYSTEM CLASSES
+   ======================================================================== */
+
 class ParticleSystem {
   constructor(containerSelector, cssPrefix, className, defaults = {}){
     this.container = document.querySelector(containerSelector);
@@ -1228,12 +1306,6 @@ class ParticleSystem {
 
   static random(min, max){
     return Math.random() * (max - min) + min;
-  }
-}
-
-class ClickEffects {
-  constructor() {
-    // only burst particles are used — no SVG
   }
 }
 
@@ -1423,6 +1495,10 @@ class CrownParticlesSmall {
   }
 }
 
+/* ========================================================================
+   SINGLETON INSTANCES
+   ======================================================================== */
+
 const energyParticles = new EnergyParticles();
 
 // Singleton instances
@@ -1523,6 +1599,10 @@ ${t.event2025}
 `;
 }
 
+/* ========================================================================
+   DATE CALCULATIONS
+   ======================================================================== */
+
 function daysSince(date){
   const msPerDay = 1000*60*60*24;
   return Math.floor((Date.now() - date.getTime())/msPerDay);
@@ -1539,6 +1619,10 @@ function buildRanges(){
   return { range24: r24, range25: r25 };
 }
 
+/* ========================================================================
+   STRING GENERATION
+   ======================================================================== */
+
 function generateFinalString(){
   const { range24, range25 } = buildRanges();
   return generateTemplate(range24,range25)
@@ -1546,9 +1630,9 @@ function generateFinalString(){
     .filter(g => g.length > 0).join('&').replace(/\s+/g, ' ');
 }
 
-let cachedString = '';
-let _prevCachedString;
-let searchString = ''; // Always holds the actual search string for clipboard
+/* ========================================================================
+   UI UPDATES & RENDERING
+   ======================================================================== */
 
 function renderPreview(){
   if(!output) return;
@@ -1567,8 +1651,6 @@ function renderPreview(){
   // After rendering new content recompute whether the body should be centered
   requestAnimationFrame(ResizeManager.updateBodyCentered);
 }
-
-let timer;
 
 function scheduleMidnightUpdate(){
   if(timer) clearTimeout(timer);
@@ -1605,6 +1687,10 @@ const ResizeManager = {
 window.addEventListener('resize', ResizeManager.updateBodyCentered);
 window.addEventListener('orientationchange', ResizeManager.updateBodyCentered);
 document.addEventListener('visibilitychange', () => !document.hidden && ResizeManager.updateBodyCentered());
+
+/* ========================================================================
+   EVENT HANDLERS & INTERACTIONS
+   ======================================================================== */
 
 function toggleModeInfo(){
   if(!infoBtn || !output) return;
@@ -1723,23 +1809,20 @@ const _attachUIListeners = ()=>{
   }
 };
 
+/* ========================================================================
+   INITIALIZATION
+   ======================================================================== */
+
 _attachUIListeners();
-// Initialize UI language after listeners are attached
 updateUILanguage();
-
-
 renderPreview();
 scheduleMidnightUpdate();
-// Initialize energy particles first for optimal visual layering
 energyParticles.init();
-// initialize particles after rendering so header sizes are known
 initParticles();
-// initialize crown particles
 crownParticles.init();
-// initialize small crown particles
 crownParticlesSmall.init();
-// Phase 8: Debounced resize handlers using ResizeManager
-let _resizeTimer;
+
+// Debounced resize handlers
 const debounceResize = (fn, delay) => () => {
   clearTimeout(_resizeTimer);
   _resizeTimer = setTimeout(fn, delay);
@@ -1753,7 +1836,7 @@ if(window.visualViewport) {
 
 document.addEventListener('visibilitychange', ()=>{ !document.hidden && (renderPreview(), scheduleMidnightUpdate()); });
 
-// Prevent pinch-to-zoom on mobile browsers
+// Prevent pinch-to-zoom on mobile
 document.addEventListener('gesturestart', function(e) {
   e.preventDefault();
 }, { passive: false });
@@ -1805,6 +1888,10 @@ document.addEventListener('touchmove', function(e) {
     document.querySelectorAll('.header-energy').forEach(makeBumper);
   }
 })();
+
+/* ========================================================================
+   SPECIALIZED SYSTEMS
+   ======================================================================== */
 
 // Click effects system - particle burst on non-interactive clicks
 (function(){
@@ -1902,7 +1989,44 @@ document.addEventListener('touchmove', function(e) {
   }, {passive:true});
 })();
 
-// Fade-from-black intro ---------------------------------------------------
+// Energy layer z-index management for pulsing animations
+(function(){
+  function parseFirstDuration(str){
+    if(!str) return 4;
+    const first = (str.split(',')[0]||'4s').trim();
+    if(first.endsWith('ms')) return parseFloat(first) / 1000 || 4;
+    return parseFloat(first) || 4;
+  }
+
+  function makeBumper(el){
+    const cs = getComputedStyle(el);
+    const dur = parseFirstDuration(cs.animationDuration);
+    const baseZ = cs.zIndex === 'auto' ? '' : cs.zIndex;
+    el.dataset._baseZ = baseZ;
+    const resetDelay = Math.max(200, dur * 1000 * 0.5);
+    const bump = ()=>{
+      if(el._zResetTimeout) clearTimeout(el._zResetTimeout);
+      el.style.zIndex = 10000;
+      el._zResetTimeout = setTimeout(()=>{
+        if(el.dataset._baseZ === '') el.style.zIndex = '';
+        else el.style.zIndex = el.dataset._baseZ;
+        delete el._zResetTimeout;
+      }, resetDelay);
+    };
+    el.addEventListener('animationstart', (ev)=>{ if(ev.animationName === 'energy-pop') bump(); });
+    el.addEventListener('animationiteration', (ev)=>{ if(ev.animationName === 'energy-pop') bump(); });
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.querySelectorAll('.header-energy').forEach(makeBumper);
+    });
+  } else {
+    document.querySelectorAll('.header-energy').forEach(makeBumper);
+  }
+})();
+
+// Fade-from-black intro
 (function(){
   const overlay = document.getElementById('fade-overlay');
   if(!overlay) return;
@@ -1950,3 +2074,4 @@ document.addEventListener('touchmove', function(e) {
 
 </body>
 </html>
+
