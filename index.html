@@ -1116,6 +1116,18 @@ function setLanguage(lang) {
     
     // Update language at the exact middle of the animation (when rotated 90deg and invisible)
     setTimeout(() => {
+      // Reset clipboard button state at the same moment language changes (while button is invisible)
+      const clipboardBtn = document.querySelector('.btn-clipboard');
+      if (clipboardBtn) {
+        if (clipboardBtn._timeout) clearTimeout(clipboardBtn._timeout);
+        clipboardBtn.classList.remove('success', 'error');
+        if (clipboardBtn._savedMinHeight !== undefined) {
+          clipboardBtn.style.minHeight = clipboardBtn._savedMinHeight || '';
+          delete clipboardBtn._savedMinHeight;
+        }
+        delete clipboardBtn._timeout;
+      }
+      
       updateUILanguage();
       renderPreview();
     }, 300); // Exactly half of the 600ms animation duration
